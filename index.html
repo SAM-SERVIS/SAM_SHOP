@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAM_SHOP</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: #ffffff; padding: 15px; }
+
+        /* Шапка с названием и логотипом */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .header img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        /* Сетка товаров */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .product-card { border: 1px solid #eee; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .product-card img { width: 100%; height: 150px; object-fit: cover; display: block; }
+        .product-info { padding: 10px; }
+        .product-name { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+        .product-price { color: #2ecc71; font-weight: bold; margin-bottom: 10px; font-size: 16px; }
+        .buy-btn { background: #2ecc71; color: white; border: none; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; width: 100%; }
+        .buy-btn:active { background: #27ae60; }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <div class="header">
+        <h1>SAM_SHOP</h1>
+        <img src="images/samlog.png" alt="SAM">
+    </div>
+
+    <div class="products-grid" id="products-container"></div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+
+        const products = [
+            { id: 1, name: "Футболка SAM", price: 1500, image: "images/1.jpg" },
+            { id: 2, name: "Кепка SAM", price: 900, image: "images/2.jpg" },
+            { id: 3, name: "Сумка SAM", price: 2500, image: "images/3.jpg" },
+            { id: 4, name: "Носки SAM", price: 400, image: "images/4.jpg" }
+            // Добавь остальные 23 товара
+        ];
+
+        const container = document.getElementById('products-container');
+        products.forEach(product => {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `
+                <img src="${product.image}" alt="${product.name}">
+                <div class="product-info">
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">${product.price} ₽</div>
+                    <button class="buy-btn" data-name="${product.name}" data-price="${product.price}">Купить</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('buy-btn')) {
+                const name = e.target.dataset.name;
+                const price = e.target.dataset.price;
+                tg.sendData(JSON.stringify({ action: 'buy', item_name: name, price: Number(price) }));
+                tg.close();
+            }
+        });
+    </script>
+</body>
+</html>
