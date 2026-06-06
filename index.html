@@ -8,22 +8,38 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
         body { background: #ffffff; padding: 15px; }
 
-        /* Шапка с названием и логотипом */
+        /* Шапка */
         .header {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
+            margin-bottom: 15px;
+        }
+        .header h1 { font-size: 24px; margin: 0; }
+        .header img { width: 40px; height: 40px; object-fit: contain; }
+
+        /* Кнопки каталогов */
+        .catalog-buttons {
+            display: flex;
+            gap: 10px;
             margin-bottom: 20px;
         }
-        .header h1 {
-            font-size: 24px;
-            margin: 0;
+        .catalog-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #2ecc71;
+            border-radius: 10px;
+            background: white;
+            color: #2ecc71;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .header img {
-            width: 40px;
-            height: 40px;
-            object-fit: contain;
+        .catalog-btn.active {
+            background: #2ecc71;
+            color: white;
         }
 
         /* Сетка товаров */
@@ -42,9 +58,16 @@
     <!-- Шапка -->
     <div class="header">
         <h1>SAM_SHOP</h1>
-        <img src="images/samlog.jpg" alt="SAM">
+        <img src="images/samlog.png" alt="SAM">
     </div>
 
+    <!-- Кнопки каталогов -->
+    <div class="catalog-buttons">
+        <button class="catalog-btn active" data-catalog="compressors">Компрессора</button>
+        <button class="catalog-btn" data-catalog="plates">Пластины</button>
+    </div>
+
+    <!-- Сетка товаров -->
     <div class="products-grid" id="products-container"></div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -52,43 +75,69 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
 
+        // Все товары с категориями
         const products = [
-            { id: 1, name: "Управляющий клапан компресора кондиционера k2", price: 1500, image: "images/к2.jpg" },
-            { id: 2, name: "Управляющий клапан компресора кондиционера k6", price: 900, image: "images/к6.jpg" },
-            { id: 3, name: "Управляющий клапан компресора кондиционера k8", price: 2500, image: "images/к8.jpg" },
-            { id: 4, name: "Управляющий клапан компресора кондиционера k24", price: 2500, image: "images/к24.jpg" },
-            { id: 5, name: "Управляющий клапан компресора кондиционера k3", price: 400, image: "images/к3.jpg" }
+            // === КОМПРЕССОРА ===
+            { id: 1, name: "Управляющий клапан компресора кондиционера k2", price: 900, category: "compressors", image: "images/к1.jpg" },
+            { id: 2, name: "Управляющий клапан компресора кондиционера k2", price: 820, category: "compressors", image: "images/к2.jpg" },
+            { id: 3, name: "Управляющий клапан компресора кондиционера k2", price: 700, category: "compressors", image: "images/к3.jpg" },
+            { id: 4, name: "Управляющий клапан компресора кондиционера k2", price: 800, category: "compressors", image: "images/к4.jpg" },
+
+            // === ПЛАСТИНЫ ===
+            { id: 5, name: "VSTSU065", price: 900, category: "plates", image: "images/p1.jpg" },
+            { id: 6, name: "VSTSU041", price: 5500, category: "plates", image: "images/p2.jpg" },
+            { id: 7, name: "VSTSU061504005418", price: 900, category: "plates", image: "images/p3.jpg" },
+            { id: 8, name: "VSTSU0171618494", price: 900, category: "plates", image: "images/p4.jpg" }
             // Добавь остальные товары
         ];
 
         const container = document.getElementById('products-container');
-        products.forEach(product => {
-            const card = document.createElement('div');
-            card.className = 'product-card';
-            card.innerHTML = `
-                <img src="${product.image}" alt="${product.name}">
-                <div class="product-info">
-                    <div class="product-name">${product.name}</div>
-                    <div class="product-price">${product.price} ₽</div>
-                    <button class="buy-btn" data-name="${product.name}" data-price="${product.price}">Купить</button>
-                </div>
-            `;
-            container.appendChild(card);
+        const buttons = document.querySelectorAll('.catalog-btn');
+
+        let currentCatalog = 'compressors'; // По умолчанию показываем компрессора
+
+        // Функция отрисовки товаров
+        function renderProducts(catalog) {
+            container.innerHTML = '';
+            const filtered = products.filter(p => p.category === catalog);
+
+            filtered.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}">
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">${product.price.toLocaleString()} ₽</div>
+                        <button class="buy-btn" data-name="${product.name}" data-price="${product.price}">Купить</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Переключение каталогов
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCatalog = btn.dataset.catalog;
+                renderProducts(currentCatalog);
+            });
         });
 
-       document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('buy-btn')) {
-        const name = e.target.dataset.name;
-        const price = e.target.dataset.price;
-        
-        tg.sendData(JSON.stringify({ action: 'buy', item_name: name, price: Number(price) }));
-        
-        // Задержка 500 мс перед закрытием
-        setTimeout(() => {
-            tg.close();
-        }, 500);
-    }
-});
+        // Первая загрузка
+        renderProducts(currentCatalog);
+
+        // Клик по кнопке «Купить»
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('buy-btn')) {
+                const name = e.target.dataset.name;
+                const price = e.target.dataset.price;
+                tg.sendData(JSON.stringify({ action: 'buy', item_name: name, price: Number(price) }));
+                tg.close();
+            }
+        });
     </script>
 </body>
 </html>
