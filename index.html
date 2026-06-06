@@ -76,14 +76,19 @@
             container.appendChild(card);
         });
 
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('buy-btn')) {
-                const name = e.target.dataset.name;
-                const price = e.target.dataset.price;
-                tg.sendData(JSON.stringify({ action: 'buy', item_name: name, price: Number(price) }));
-                tg.close();
-            }
-        });
+       document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('buy-btn')) {
+        const name = e.target.dataset.name;
+        const price = e.target.dataset.price;
+        
+        tg.sendData(JSON.stringify({ action: 'buy', item_name: name, price: Number(price) }));
+        
+        // Задержка 500 мс перед закрытием
+        setTimeout(() => {
+            tg.close();
+        }, 500);
+    }
+});
     </script>
 </body>
 </html>
