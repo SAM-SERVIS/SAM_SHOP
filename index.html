@@ -78,10 +78,10 @@
         // Все товары с категориями
         const products = [
             // === КОМПРЕССОРА ===
-            { id: 1, name: "Управляющий клапан компресора кондиционера k2", price: 900, category: "compressors", image: "images/к2.jpg" },
-            { id: 2, name: "Управляющий клапан компресора кондиционера k24", price: 820, category: "compressors", image: "images/к24.jpg" },
-            { id: 3, name: "Управляющий клапан компресора кондиционера k3", price: 700, category: "compressors", image: "images/к3.jpg" },
-            { id: 4, name: "Управляющий клапан компресора кондиционера k8", price: 800, category: "compressors", image: "images/к8.jpg" },
+            { id: 1, name: "Управляющий клапан компрессора кондиционера k2", price: 900, category: "compressors", image: "images/к2.jpg" },
+            { id: 2, name: "Управляющий клапан компрессора кондиционера k24", price: 820, category: "compressors", image: "images/к24.jpg" },
+            { id: 3, name: "Управляющий клапан компрессора кондиционера k3", price: 700, category: "compressors", image: "images/к3.jpg" },
+            { id: 4, name: "Управляющий клапан компрессора кондиционера k8", price: 800, category: "compressors", image: "images/к8.jpg" },
 
             // === ПЛАСТИНЫ ===
             { id: 5, name: "VSTSU065", price: 900, category: "plates", image: "images/p1.jpg" },
@@ -134,7 +134,17 @@
             if (e.target.classList.contains('buy-btn')) {
                 const name = e.target.dataset.name;
                 const price = e.target.dataset.price;
-                tg.sendData(JSON.stringify({ action: 'buy', item_name: name, price: Number(price) }));
+                try {
+    tg.sendData(JSON.stringify({
+        action: 'buy',
+        item_name: name,
+        price: Number(price)
+    }));
+
+    alert("Данные отправлены");
+} catch(err) {
+    alert(err);
+}
             }
         });
     </script>
