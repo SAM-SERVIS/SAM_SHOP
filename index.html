@@ -135,7 +135,6 @@
                 const name = e.target.dataset.name;
                 const price = e.target.dataset.price;
                 tg.sendData(JSON.stringify({ action: 'buy', item_name: name, price: Number(price) }));
-                tg.close();
             }
         });
     </script>
